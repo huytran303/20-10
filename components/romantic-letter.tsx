@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
 import { Music, VolumeX, Heart, ChevronRight } from 'lucide-react'
+import Image from 'next/image';
 
 export default function RomanticLetter() {
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
@@ -183,12 +184,13 @@ export default function RomanticLetter() {
                 >
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 font-serif drop-shadow-lg">My Dearest Love</h1>
                   <div className="relative inline-block mb-4">
-                    <img src="/anh1.jpeg" alt="Romantic" className="rounded-lg shadow-md w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 object-cover border-4 border-white" />
+                    <Image src="/anh1.jpeg" alt="Romantic" className="rounded-lg shadow-md w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 object-cover border-4 border-white" width={192} height={192} />
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent rounded-lg"></div>
                   </div>
                   <p className="text-white text-xs sm:text-sm md:text-base font-serif italic px-4 leading-relaxed drop-shadow">
                     Your love is the most beautiful thing in my life. Every moment with you is a treasure I cherish deeply.
-                    You are the rose in my garden of life, the melody in my heart's song. With each passing day, my love for you grows stronger, deeper, and more profound.
+                    You are the rose in my garden of life, the melody in my heart&apos;s song. With each passing day, my love for you grows stronger, deeper, and more profound.
+
                   </p>
                   <motion.div
                     className="mt-4 inline-block bg-white/80 text-red-500 px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-lg text-xs sm:text-sm"
@@ -223,7 +225,7 @@ export default function RomanticLetter() {
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent rounded-lg"></div>
                   </div>
                   <p className="text-white text-xs sm:text-sm md:text-base font-serif italic px-4 leading-relaxed drop-shadow">
-                    Click to see the next beautiful moment we've shared together.
+                    Click to see the next beautiful moment weve shared together.
                   </p>
                   <motion.div
                     className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/80 text-red-500 p-1 sm:p-2 rounded-full shadow-lg"
