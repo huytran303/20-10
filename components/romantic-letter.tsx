@@ -174,7 +174,9 @@ export default function RomanticLetter() {
       <LayoutGroup>
         <motion.div
           layout
-          className={`cursor-pointer bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg overflow-hidden ${isEnvelopeOpen ? 'w-[95%] max-w-md h-auto aspect-[3/4]' : 'w-64 h-48 sm:w-72 sm:h-56'
+          className={`cursor-pointer bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg overflow-hidden ${isEnvelopeOpen
+            ? 'w-[95%] max-w-md h-auto aspect-[3/4] sm:w-[90%] sm:max-w-2xl sm:aspect-[4/3]'
+            : 'w-64 h-48 sm:w-72 sm:h-56'
             }`}
           onClick={toggleEnvelope}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -224,14 +226,14 @@ export default function RomanticLetter() {
               {isEnvelopeOpen && !isLetterRead && (
                 <motion.div
                   key="letter"
-                  className="text-center relative z-10 flex flex-col items-center justify-between h-full"
+                  className="text-center relative z-10 flex flex-col items-center justify-between h-full sm:block"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
                   <motion.h1
-                    className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 font-serif drop-shadow-lg"
+                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-4 font-serif drop-shadow-lg"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
@@ -239,7 +241,7 @@ export default function RomanticLetter() {
                     My Dearest Love
                   </motion.h1>
                   <motion.div
-                    className="relative inline-block mb-2"
+                    className="relative inline-block mb-2 sm:mb-4"
                     initial={{ rotate: -5 }}
                     animate={{ rotate: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
@@ -247,14 +249,14 @@ export default function RomanticLetter() {
                     <Image
                       src="/anh1.jpeg"
                       alt="Romantic"
-                      className="rounded-lg shadow-md w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 object-cover border-4 border-white"
-                      width={128}
-                      height={128}
+                      className="rounded-lg shadow-md w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-cover border-4 border-white"
+                      width={192}
+                      height={192}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent rounded-lg"></div>
                   </motion.div>
                   <motion.div
-                    className="text-white text-xs sm:text-sm md:text-base font-serif italic px-2 leading-relaxed drop-shadow overflow-y-auto max-h-[40vh] scrollbar-thin scrollbar-thumb-red-300 scrollbar-track-transparent"
+                    className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-serif italic px-2 sm:px-4 leading-relaxed drop-shadow overflow-y-auto max-h-[40vh] sm:max-h-none scrollbar-thin scrollbar-thumb-red-300 scrollbar-track-transparent"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
@@ -267,7 +269,7 @@ export default function RomanticLetter() {
                     </p>
                   </motion.div>
                   <motion.div
-                    className="mt-2 inline-block bg-white/80 text-red-500 px-2 py-1 rounded-full shadow-lg text-xs sm:text-sm"
+                    className="mt-2 sm:mt-4 inline-block bg-white/80 text-red-500 px-2 py-1 sm:px-3 sm:py-2 rounded-full shadow-lg text-xs sm:text-sm"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     initial={{ y: 20, opacity: 0 }}
@@ -281,14 +283,14 @@ export default function RomanticLetter() {
               {isEnvelopeOpen && isLetterRead && !isAlbumComplete && (
                 <motion.div
                   key="album"
-                  className="text-center relative z-10 flex flex-col items-center justify-between h-full"
+                  className="text-center relative z-10 flex flex-col items-center justify-between h-full sm:block"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
                   <motion.h1
-                    className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 font-serif drop-shadow-lg"
+                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-4 font-serif drop-shadow-lg"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
@@ -296,7 +298,7 @@ export default function RomanticLetter() {
                     Our Love Album
                   </motion.h1>
                   <motion.div
-                    className="relative inline-block mb-2 w-full max-w-[250px]"
+                    className="relative inline-block mb-2 sm:mb-4 w-full max-w-[250px] sm:max-w-none"
                     initial={{ rotate: -5 }}
                     animate={{ rotate: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
@@ -309,7 +311,7 @@ export default function RomanticLetter() {
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent rounded-lg"></div>
                   </motion.div>
                   <motion.p
-                    className="text-white text-xs sm:text-sm md:text-base font-serif italic px-2 leading-relaxed drop-shadow"
+                    className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-serif italic px-2 sm:px-4 leading-relaxed drop-shadow"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
@@ -317,7 +319,7 @@ export default function RomanticLetter() {
                     Click to see the next beautiful moment we&apos;ve shared together.
                   </motion.p>
                   <motion.div
-                    className="absolute bottom-2 right-2 bg-white/80 text-red-500 p-1 rounded-full shadow-lg"
+                    className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/80 text-red-500 p-1 sm:p-2 rounded-full shadow-lg"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     initial={{ y: 20, opacity: 0 }}
@@ -337,7 +339,7 @@ export default function RomanticLetter() {
                   transition={{ duration: 0.5 }}
                 >
                   <motion.div
-                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-serif drop-shadow-lg"
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white font-serif drop-shadow-lg"
                     initial={{ y: -20 }}
                     animate={{ y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
@@ -345,7 +347,7 @@ export default function RomanticLetter() {
                     Happy 20/10
                   </motion.div>
                   <motion.p
-                    className="text-white text-sm sm:text-base md:text-lg font-serif italic mt-4 px-4 leading-relaxed drop-shadow"
+                    className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-serif italic mt-4 px-4 leading-relaxed drop-shadow"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
