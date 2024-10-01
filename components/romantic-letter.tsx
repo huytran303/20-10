@@ -32,11 +32,11 @@ export default function RomanticLetter() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const images = [
-    '/placeholder.svg?height=300&width=400&text=Romantic+Moment+1',
-    '/placeholder.svg?height=300&width=400&text=Romantic+Moment+2',
-    '/placeholder.svg?height=300&width=400&text=Romantic+Moment+3',
-    '/placeholder.svg?height=300&width=400&text=Romantic+Moment+4',
-    '/placeholder.svg?height=300&width=400&text=Romantic+Moment+5',
+    '/anh1.jpeg',
+    '/anh1.jpeg',
+    '/anh1.jpeg',
+    '/anh1.jpeg',
+    '/anh1.jpeg',
   ]
 
   const initializeAudio = useCallback(() => {
@@ -81,12 +81,17 @@ export default function RomanticLetter() {
     }
 
     const createHearts = () => {
-      return Array.from({ length: 20 }, () => ({
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        animationDelay: `${Math.random() * 5}s`,
-        animationDuration: `${5 + Math.random() * 5}s`
-      }))
+      return Array.from({ length: 20 }, () => {
+        const side = Math.random() < 0.5 ? 'left' : 'right'
+        const verticalPosition = Math.random() < 0.5 ? 'top' : 'bottom'
+        const position: React.CSSProperties = {
+          [side]: `${Math.random() * 20}%`,
+          [verticalPosition]: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 5}s`,
+          animationDuration: `${5 + Math.random() * 5}s`
+        }
+        return position
+      })
     }
 
     setPetals(createPetals())
@@ -94,10 +99,12 @@ export default function RomanticLetter() {
 
     const interval = setInterval(() => {
       setPetals(createPetals())
-    }, 20000) // Recreate petals every 20 seconds
+      setHearts(createHearts())
+    }, 20000) // Recreate petals and hearts every 20 seconds
 
     return () => clearInterval(interval)
   }, [])
+
 
   const handleNavigation = useCallback(() => {
     if (!isEnvelopeOpen) {
@@ -205,7 +212,7 @@ export default function RomanticLetter() {
             }`}
           onClick={handleNavigation}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === 'ArrowRight') {
+            if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') {
               handleNavigation()
             }
           }}

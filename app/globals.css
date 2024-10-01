@@ -79,15 +79,7 @@ body {
   }
 }
 
-@keyframes falling {
-  0% {
-    transform: translateY(-10%) rotate(0deg);
-  }
 
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-  }
-}
 
 @keyframes floating {
 
@@ -101,15 +93,53 @@ body {
   }
 }
 
-.petal {
-  width: 20px;
-  height: 20px;
-  background-color: #ffc0cb;
-  clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%);
-  animation: falling linear infinite;
-}
-
 .floating-heart {
   font-size: 24px;
   animation: floating ease-in-out infinite;
+}
+
+@keyframes falling {
+  0% {
+    transform: translateY(-10%) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+  }
+}
+
+.petal {
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(145deg, #ff9aa2, #ffadc0);
+  clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%);
+  position: absolute;
+  opacity: 0.8;
+  animation: falling linear infinite;
+  animation-duration: calc(5s + (5 * (1 - var(--scale))));
+}
+
+.petal:nth-child(odd) {
+  animation-duration: calc(6s + (4 * (1 - var(--scale))));
+  background: linear-gradient(145deg, #ff7a7a, #ffa6c9);
+  opacity: 0.9;
+}
+
+.petal:nth-child(even) {
+  animation-duration: calc(8s + (6 * (1 - var(--scale))));
+  background: linear-gradient(145deg, #ffabbf, #ffd6e0);
+}
+
+.petal:nth-child(3n) {
+  animation-duration: calc(7s + (3 * (1 - var(--scale))));
+}
+
+.petal:nth-child(4n) {
+  animation-duration: calc(9s + (6 * (1 - var(--scale))));
+  transform: translateX(-50%);
+}
+
+.petal:nth-child(5n) {
+  animation-duration: calc(10s + (8 * (1 - var(--scale))));
+  transform: translateX(50%);
 }
