@@ -1,9 +1,24 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
 import { Music, VolumeX, Heart, ChevronRight } from 'lucide-react'
-import Image from 'next/image';
+import Image from 'next/image'
+
+const MemoizedImage = memo(({ src, alt, currentIndex }: { src: string; alt: string; currentIndex: number }) => (
+  <motion.img
+    key={currentIndex}
+    src={src}
+    alt={alt}
+    className="rounded-lg shadow-md w-full h-auto object-cover border-4 border-white"
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.8 }}
+    transition={{ duration: 0.5 }}
+  />
+))
+
+MemoizedImage.displayName = 'MemoizedImage'
 
 export default function RomanticLetter() {
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
@@ -12,6 +27,7 @@ export default function RomanticLetter() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
   const [hearts, setHearts] = useState<React.CSSProperties[]>([])
+  const [isAlbumComplete, setIsAlbumComplete] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const images = [
@@ -56,7 +72,7 @@ export default function RomanticLetter() {
 
   useEffect(() => {
     const createPetals = () => {
-      return Array.from({ length: 20 }, () => ({
+      return Array.from({ length: 30 }, () => ({
         left: `${Math.random() * 100}%`,
         animationDelay: `${Math.random() * 10}s`,
         animationDuration: `${10 + Math.random() * 10}s`
@@ -64,7 +80,7 @@ export default function RomanticLetter() {
     }
 
     const createHearts = () => {
-      return Array.from({ length: 15 }, () => ({
+      return Array.from({ length: 20 }, () => ({
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
         animationDelay: `${Math.random() * 5}s`,
@@ -89,7 +105,11 @@ export default function RomanticLetter() {
     } else if (!isLetterRead) {
       setIsLetterRead(true)
     } else {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+      const nextIndex = (currentImageIndex + 1) % images.length
+      setCurrentImageIndex(nextIndex)
+      if (nextIndex === 0) {
+        setIsAlbumComplete(true)
+      }
     }
   }
 
@@ -108,20 +128,48 @@ export default function RomanticLetter() {
 
       <div className="absolute inset-0 pointer-events-none">
         {petals.map((style, i) => (
-          <div key={`petal-${i}`} className="petal absolute" style={style} />
+          <motion.div
+            key={`petal-${i}`}
+            className="petal absolute"
+            style={style}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 2, delay: i * 0.1 }}
+          />
         ))}
       </div>
 
       <div className="absolute inset-0 pointer-events-none">
         {hearts.map((style, i) => (
-          <div key={`heart-${i}`} className="floating-heart absolute text-red-400" style={style}>
+          <motion.div
+            key={`heart-${i}`}
+            className="floating-heart absolute text-red-400"
+            style={style}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 2, delay: i * 0.1 }}
+          >
             ❤️
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      <div className="absolute top-0 left-0 m-4 sm:m-8 text-2xl sm:text-4xl">🌹</div>
-      <div className="absolute bottom-0 right-0 m-4 sm:m-8 text-2xl sm:text-4xl">🌹</div>
+      <motion.div
+        className="absolute top-0 left-0 m-4 sm:m-8 text-2xl sm:text-4xl"
+        initial={{ rotate: -45, scale: 0 }}
+        animate={{ rotate: 0, scale: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+      >
+        🌹
+      </motion.div>
+      <motion.div
+        className="absolute bottom-0 right-0 m-4 sm:m-8 text-2xl sm:text-4xl"
+        initial={{ rotate: 45, scale: 0 }}
+        animate={{ rotate: 0, scale: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+      >
+        🌹
+      </motion.div>
 
       <LayoutGroup>
         <motion.div
@@ -182,20 +230,45 @@ export default function RomanticLetter() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 font-serif drop-shadow-lg">My Dearest Love</h1>
-                  <div className="relative inline-block mb-4">
-                    <Image src="/anh1.jpeg" alt="Romantic" className="rounded-lg shadow-md w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 object-cover border-4 border-white" width={192} height={192} />
+                  <motion.h1
+                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 font-serif drop-shadow-lg"
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    My Dearest Love
+                  </motion.h1>
+                  <motion.div
+                    className="relative inline-block mb-4"
+                    initial={{ rotate: -5 }}
+                    animate={{ rotate: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                  >
+                    <Image
+                      src="/anh1.jpeg"
+                      alt="Romantic"
+                      className="rounded-lg shadow-md w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 object-cover border-4 border-white"
+                      width={192}
+                      height={192}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent rounded-lg"></div>
-                  </div>
-                  <p className="text-white text-xs sm:text-sm md:text-base font-serif italic px-4 leading-relaxed drop-shadow">
+                  </motion.div>
+                  <motion.p
+                    className="text-white text-xs sm:text-sm md:text-base font-serif italic px-4 leading-relaxed drop-shadow"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                  >
                     Your love is the most beautiful thing in my life. Every moment with you is a treasure I cherish deeply.
                     You are the rose in my garden of life, the melody in my heart&apos;s song. With each passing day, my love for you grows stronger, deeper, and more profound.
-
-                  </p>
+                  </motion.p>
                   <motion.div
                     className="mt-4 inline-block bg-white/80 text-red-500 px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-lg text-xs sm:text-sm"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
                   >
                     Click to see our memories
                   </motion.div>
@@ -210,27 +283,55 @@ export default function RomanticLetter() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 font-serif drop-shadow-lg">Our Love Album</h1>
-                  <div className="relative inline-block mb-4">
-                    <motion.img
-                      key={currentImageIndex}
+                  <motion.h1
+                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 font-serif drop-shadow-lg"
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    Our Love Album
+                  </motion.h1>
+                  <motion.div
+                    className="relative inline-block mb-4"
+                    initial={{ rotate: -5 }}
+                    animate={{ rotate: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                  >
+                    <MemoizedImage
                       src={images[currentImageIndex]}
                       alt={`Romantic Moment ${currentImageIndex + 1}`}
-                      className="rounded-lg shadow-md w-full h-auto object-cover border-4 border-white"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.5 }}
+                      currentIndex={currentImageIndex}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent rounded-lg"></div>
-                  </div>
-                  <p className="text-white text-xs sm:text-sm md:text-base font-serif italic px-4 leading-relaxed drop-shadow">
-                    Click to see the next beautiful moment weve shared together.
-                  </p>
+                  </motion.div>
+                  <AnimatePresence>
+                    {isAlbumComplete && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mt-4 font-serif drop-shadow-lg"
+                      >
+                        Happy 20/10
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <motion.p
+                    className="text-white text-xs sm:text-sm md:text-base font-serif italic px-4 leading-relaxed drop-shadow"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                  >
+                    Click to see the next beautiful moment we&apos;ve shared together.
+                  </motion.p>
                   <motion.div
                     className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/80 text-red-500 p-1 sm:p-2 rounded-full shadow-lg"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
                   >
                     <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
                   </motion.div>
@@ -241,12 +342,17 @@ export default function RomanticLetter() {
         </motion.div>
       </LayoutGroup>
 
-      <button
+      <motion.button
         onClick={toggleAudio}
         className="absolute bottom-4 right-4 bg-white/80 hover:bg-white text-red-500 p-2 rounded-full shadow-lg transition-colors duration-200"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
       >
         {isAudioPlaying ? <VolumeX className="w-4 h-4 sm:w-6 sm:h-6" /> : <Music className="w-4 h-4 sm:w-6 sm:h-6" />}
-      </button>
+      </motion.button>
     </div>
   )
 }
