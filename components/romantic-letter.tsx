@@ -29,6 +29,7 @@ export default function RomanticLetter() {
   const [hearts, setHearts] = useState<React.CSSProperties[]>([])
   const [isAlbumComplete, setIsAlbumComplete] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const images = [
     '/placeholder.svg?height=300&width=400&text=Romantic+Moment+1',
@@ -98,7 +99,7 @@ export default function RomanticLetter() {
     return () => clearInterval(interval)
   }, [])
 
-  const toggleEnvelope = () => {
+  const handleNavigation = useCallback(() => {
     if (!isEnvelopeOpen) {
       setIsEnvelopeOpen(true)
       playAudio()
@@ -111,7 +112,26 @@ export default function RomanticLetter() {
         setIsAlbumComplete(true)
       }
     }
-  }
+  }, [isEnvelopeOpen, isLetterRead, isAlbumComplete, currentImageIndex, images.length, playAudio])
+
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === 'ArrowRight') {
+      handleNavigation()
+    }
+  }, [handleNavigation])
+
+  useEffect(() => {
+    const currentContainer = containerRef.current
+    if (currentContainer) {
+      currentContainer.focus()
+      currentContainer.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      if (currentContainer) {
+        currentContainer.removeEventListener('keydown', handleKeyDown)
+      }
+    }
+  }, [handleKeyDown])
 
   const toggleAudio = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -123,7 +143,12 @@ export default function RomanticLetter() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 to-red-100 flex items-center justify-center overflow-hidden relative p-4">
+    <div
+      className="min-h-screen bg-gradient-to-br from-pink-200 to-red-100 flex items-center justify-center overflow-hidden relative p-4"
+      ref={containerRef}
+      tabIndex={0}
+      aria-label="Romantic Letter Interactive Experience"
+    >
       <div className="absolute inset-0 border-[20px] border-red-300 rounded-3xl m-4 sm:m-8 pointer-events-none"></div>
 
       <div className="absolute inset-0 pointer-events-none">
@@ -178,7 +203,15 @@ export default function RomanticLetter() {
             ? 'w-[95%] max-w-md h-auto aspect-[3/4] sm:w-[90%] sm:max-w-2xl sm:aspect-[4/3]'
             : 'w-64 h-48 sm:w-72 sm:h-56'
             }`}
-          onClick={toggleEnvelope}
+          onClick={handleNavigation}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === 'ArrowRight') {
+              handleNavigation()
+            }
+          }}
+          tabIndex={0}
+          role="button"
+          aria-label={isEnvelopeOpen ? (isLetterRead ? "View next image" : "Read letter") : "Open envelope"}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <motion.div layout className="w-full h-full relative p-4">
@@ -369,6 +402,7 @@ export default function RomanticLetter() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.7 }}
+        aria-label={isAudioPlaying ? "Pause music" : "Play music"}
       >
         {isAudioPlaying ? <VolumeX className="w-4 h-4 sm:w-6 sm:h-6" /> : <Music className="w-4 h-4 sm:w-6 sm:h-6" />}
       </motion.button>
