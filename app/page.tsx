@@ -1,7 +1,6 @@
-import RomanticLetter from "@/components/romantic-letter";
-
+import { Page } from "@/components/page";
 export default function Home() {
   return (
-    <RomanticLetter />
+    <Page />
   );
 }
