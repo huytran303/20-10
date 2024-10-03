@@ -1,55 +1,112 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Pause, Play } from 'lucide-react'
 import Image from 'next/image'
 
 const memories = [
   { id: 1, src: "/anh1.jpeg", alt: "Kỷ niệm 1" },
-  { id: 2, src: "/placeholder.svg?height=300&width=300", alt: "Kỷ niệm 2" },
-  { id: 3, src: "/placeholder.svg?height=300&width=300", alt: "Kỷ niệm 3" },
-  { id: 4, src: "/placeholder.svg?height=300&width=300", alt: "Kỷ niệm 4" },
-  { id: 5, src: "/placeholder.svg?height=300&width=300", alt: "Kỷ niệm 5" },
-  { id: 6, src: "/placeholder.svg?height=300&width=300", alt: "Kỷ niệm 6" },
+  { id: 2, src: "/anh1.jpeg", alt: "Kỷ niệm 2" },
+  { id: 3, src: "/anh1.jpeg", alt: "Kỷ niệm 3" },
+  { id: 4, src: "/anh1.jpeg", alt: "Kỷ niệm 4" },
+  { id: 5, src: "/anh1.jpeg", alt: "Kỷ niệm 5" },
+  { id: 6, src: "/anh1.jpeg", alt: "Kỷ niệm 6" },
 ]
 
 const sections = ['home', 'memories', 'message', 'gift']
 
-export function Page() {
+const StarryBackground = memo(() => (
+  <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    {[...Array(100)].map((_, i) => (
+      <motion.div
+        key={i}
+        className="absolute rounded-full bg-white"
+        style={{
+          width: Math.random() * 3 + 1 + "px",
+          height: Math.random() * 3 + 1 + "px",
+          top: Math.random() * 100 + "%",
+          left: Math.random() * 100 + "%",
+        }}
+        animate={{
+          opacity: [0, 1, 0],
+          scale: [0, 1, 0],
+        }}
+        transition={{
+          duration: Math.random() * 3 + 2,
+          repeat: Infinity,
+          repeatType: "loop",
+        }}
+      />
+    ))}
+  </div>
+))
 
+StarryBackground.displayName = 'StarryBackground'
+
+const MemoryImage = memo(({ src, alt }: { src: string; alt: string }) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="aspect-square relative overflow-hidden rounded-lg shadow-lg"
+    >
+      <Image
+        src={src}
+        alt={alt}
+        layout="fill"
+        objectFit="cover"
+        className={`transition-all duration-300 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110'}`}
+        onLoadingComplete={() => setIsLoaded(true)}
+      />
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-pink-200 animate-pulse" />
+      )}
+    </motion.div>
+  )
+})
+
+MemoryImage.displayName = 'MemoryImage'
+
+export function Page() {
   const [activeSection, setActiveSection] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showGift, setShowGift] = useState(false)
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowMessage(true), 3000)
-    return () => clearTimeout(timer)
-  }, [])
+    audioRef.current = new Audio('/nhac.mp3')
+    audioRef.current.loop = true
 
-  useEffect(() => {
-    audioRef.current = new Audio('/nhac.mp3') // Thay thế bằng đường dẫn thực tế đến file nhạc của bạn
-    audioRef.current.loop = true // Lặp lại bài hát
+    audioRef.current.addEventListener('canplaythrough', () => {
+      setIsAudioLoaded(true)
+    })
 
-    const playAudio = () => {
+    return () => {
       if (audioRef.current) {
-        audioRef.current.play()
-          .then(() => {
-            setIsPlaying(true)
-          })
-          .catch(error => {
-            console.log("Autoplay prevented:", error)
-            setIsPlaying(false)
-          })
+        audioRef.current.pause()
+        audioRef.current = null
       }
     }
+  }, [])
 
-    playAudio()
+  const playAudio = useCallback(() => {
+    if (audioRef.current && isAudioLoaded) {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(error => {
+          console.log("Autoplay prevented:", error)
+          setIsPlaying(false)
+        })
+    }
+  }, [isAudioLoaded])
 
-    // Thêm sự kiện để phát nhạc khi người dùng tương tác với trang
+  useEffect(() => {
     const handleUserInteraction = () => {
-      if (!isPlaying) {
+      if (!isPlaying && isAudioLoaded) {
         playAudio()
       }
       document.removeEventListener('click', handleUserInteraction)
@@ -58,13 +115,9 @@ export function Page() {
     document.addEventListener('click', handleUserInteraction)
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current = null
-      }
       document.removeEventListener('click', handleUserInteraction)
     }
-  }, [isPlaying])
+  }, [isPlaying, isAudioLoaded, playAudio])
 
   const toggleMusic = useCallback(() => {
     if (audioRef.current) {
@@ -103,10 +156,22 @@ export function Page() {
     }
   }, [handleNavigation])
 
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (e.button === 0) { // Left click
+      handleNavigation('next')
+    }
+  }, [handleNavigation])
+
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    handleNavigation('prev')
+  }, [handleNavigation])
+
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4 overflow-hidden"
-      onClick={() => handleNavigation('next')}
+      className="min-h-screen bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4 overflow-hidden cursor-pointer"
+      onClick={handleClick}
+      onContextMenu={handleContextMenu}
     >
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
@@ -115,30 +180,7 @@ export function Page() {
         }
       `}</style>
 
-      {/* Galaxy background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {[...Array(100)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: Math.random() * 3 + 1 + "px",
-              height: Math.random() * 3 + 1 + "px",
-              top: Math.random() * 100 + "%",
-              left: Math.random() * 100 + "%",
-            }}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              repeatType: "loop",
-            }}
-          />
-        ))}
-      </div>
+      <StarryBackground />
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -175,6 +217,15 @@ export function Page() {
               >
                 <Heart className="text-pink-500 mx-auto" size={48} />
               </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 0.5 }}
+                className="text-sm md:text-base text-pink-200 mt-8"
+              >
+
+              </motion.p>
             </div>
           )}
 
@@ -183,20 +234,7 @@ export function Page() {
               <h2 className="text-2xl md:text-4xl font-bold text-pink-300 mb-6 md:mb-8">Những Kỷ Niệm Đẹp</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
                 {memories.map((memory) => (
-                  <motion.div
-                    key={memory.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="aspect-square relative overflow-hidden rounded-lg shadow-lg"
-                  >
-                    <Image
-                      src={memory.src}
-                      alt={memory.alt}
-                      layout="fill"
-                      objectFit="cover"
-                      className="transition-transform duration-300 hover:scale-110"
-                    />
-                  </motion.div>
+                  <MemoryImage key={memory.id} src={memory.src} alt={memory.alt} />
                 ))}
               </div>
             </div>
@@ -256,9 +294,10 @@ export function Page() {
             }}
           >
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 180 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
               className="bg-pink-100 p-4 md:p-6 rounded-lg shadow-xl max-w-xs md:max-w-md text-center"
               onClick={(e) => e.stopPropagation()}
             >
@@ -268,7 +307,7 @@ export function Page() {
               </p>
               <div className="relative w-full aspect-square mb-3 md:mb-4">
                 <Image
-                  src="/placeholder.svg?height=200&width=200"
+                  src="/anh1.jpeg"
                   alt="Món quà"
                   layout="fill"
                   objectFit="cover"
@@ -302,9 +341,4 @@ export function Page() {
       </motion.button>
     </div>
   )
-}
-
-function setShowMessage(arg0: boolean): void {
-  console.log(arg0);
-  throw new Error('Function not implemented.')
 }
