@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Pause, Play } from 'lucide-react'
+import { Heart, Pause, Play, Gift } from 'lucide-react'
 import Image from 'next/image'
-
+import React from 'react'
+import Head from 'next/head'
 const memories = [
   { id: 1, src: "/anh1.jpeg", alt: "Kỷ niệm 1" },
-  { id: 2, src: "/anh1.jpeg", alt: "Kỷ niệm 2" },
-  { id: 3, src: "/anh1.jpeg", alt: "Kỷ niệm 3" },
-  { id: 4, src: "/anh1.jpeg", alt: "Kỷ niệm 4" },
-  { id: 5, src: "/anh1.jpeg", alt: "Kỷ niệm 5" },
-  { id: 6, src: "/anh1.jpeg", alt: "Kỷ niệm 6" },
+  { id: 2, src: "/anh2.jpg", alt: "Kỷ niệm 2" },
+  { id: 3, src: "/anh3.png", alt: "Kỷ niệm 3" },
+  { id: 4, src: "/anh4.jpg", alt: "Kỷ niệm 4" },
+  { id: 5, src: "/anh5.png", alt: "Kỷ niệm 5" },
+  { id: 6, src: "/anh6.png", alt: "Kỷ niệm 6" },
 ]
 
 const sections = ['home', 'memories', 'message', 'gift']
@@ -74,6 +75,7 @@ export function Page() {
   const [activeSection, setActiveSection] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showGift, setShowGift] = useState(false)
+  const [isGiftOpened, setIsGiftOpened] = useState(false)
   const [isAudioLoaded, setIsAudioLoaded] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -167,178 +169,275 @@ export function Page() {
     handleNavigation('prev')
   }, [handleNavigation])
 
+  const giftVariants = {
+    closed: {
+      scale: 1,
+      rotateY: 0,
+    },
+    opening: {
+      scale: [1, 1.1, 1],
+      rotateY: 720,
+      transition: {
+        duration: 1.5,
+        times: [0, 0.5, 1],
+        ease: "easeInOut",
+      },
+    },
+    opened: {
+      scale: 1,
+      rotateY: 720,
+    },
+  }
+
+  const contentVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  }
+
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4 overflow-hidden cursor-pointer"
-      onClick={handleClick}
-      onContextMenu={handleContextMenu}
-    >
-      <style jsx global>{`
+    <><Head>
+      <title>My Website</title>
+      <link rel="icon" href="/favicon.png" />
+    </Head>
+      <div
+        className="min-h-screen bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4 overflow-hidden cursor-pointer"
+        onClick={handleClick}
+        onContextMenu={handleContextMenu}
+      >
+        <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
         body {
           font-family: 'Quicksand', sans-serif;
         }
       `}</style>
 
-      <StarryBackground />
+        <StarryBackground />
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={sections[activeSection]}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-4xl mt-16 md:mt-20"
-        >
-          {sections[activeSection] === 'home' && (
-            <div className="text-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={sections[activeSection]}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-4xl mt-16 md:mt-20"
+          >
+            {sections[activeSection] === 'home' && (
+              <div className="text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-3xl md:text-6xl font-bold text-pink-300 mb-4 md:mb-8"
+                >
+                  Chúc Mừng 20/10!
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  className="text-lg md:text-2xl text-center text-pink-200 mb-4 md:mb-8"
+                >
+                  Gửi đến người con gái tuyệt vời nhất của anh
+                </motion.div>
+
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                >
+                  <Heart className="text-pink-500 mx-auto" size={48} />
+                </motion.div>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className="text-sm md:text-base text-pink-200 mt-8"
+                >
+                </motion.p>
+              </div>
+            )}
+
+            {sections[activeSection] === 'memories' && (
+              <div className="text-center">
+                <h2 className="text-2xl md:text-4xl font-bold text-pink-300 mb-6 md:mb-8">Ảnh của em nèe :3</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+                  {memories.map((memory) => (
+                    <MemoryImage key={memory.id} src={memory.src} alt={memory.alt} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {sections[activeSection] === 'message' && (
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="text-3xl md:text-6xl font-bold text-pink-300 mb-4 md:mb-8"
-              >
-                Chúc Mừng 20/10!
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="text-lg md:text-2xl text-center text-pink-200 mb-4 md:mb-8"
-              >
-                Gửi đến người con gái tuyệt vời nhất của anh
-              </motion.div>
-
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1 }}
-              >
-                <Heart className="text-pink-500 mx-auto" size={48} />
-              </motion.div>
-
-              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
-                className="text-sm md:text-base text-pink-200 mt-8"
+                transition={{ duration: 1 }}
+                className="bg-pink-800 bg-opacity-70 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg"
               >
+                <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Thông Điệp Yêu Thương</h2>
+                <p className="text-sm md:text-base text-pink-100">
+                  Em yêu, mỗi ngày bên em là một hành trình tuyệt vời trong dải ngân hà tình yêu của chúng ta.
+                  Cảm ơn em đã luôn ở bên anh, chia sẻ những khoảnh khắc đẹp đẽ và cả những lúc khó khăn.
+                  Em là ngôi sao sáng nhất trong vũ trụ của anh. Anh yêu em nhiều lắm!
+                </p>
+              </motion.div>
+            )}
 
-              </motion.p>
-            </div>
-          )}
+            {sections[activeSection] === 'gift' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="bg-pink-800 bg-opacity-70 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg text-center"
+              >
+                <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Món Quà Đặc Biệt</h2>
+                <p className="text-sm md:text-base text-pink-100 mb-4">Nhấn vào nút bên dưới để mở món quà của em</p>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="bg-pink-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-base"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowGift(true)
+                  }}
+                >
+                  Mở Quà
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-          {sections[activeSection] === 'memories' && (
-            <div className="text-center">
-              <h2 className="text-2xl md:text-4xl font-bold text-pink-300 mb-6 md:mb-8">Những Kỷ Niệm Đẹp</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
-                {memories.map((memory) => (
-                  <MemoryImage key={memory.id} src={memory.src} alt={memory.alt} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {sections[activeSection] === 'message' && (
+        <AnimatePresence>
+          {showGift && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-              className="bg-pink-800 bg-opacity-70 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg"
-            >
-              <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Thông Điệp Yêu Thương</h2>
-              <p className="text-sm md:text-base text-pink-100">
-                Em yêu, mỗi ngày bên em là một hành trình tuyệt vời trong dải ngân hà tình yêu của chúng ta.
-                Cảm ơn em đã luôn ở bên anh, chia sẻ những khoảnh khắc đẹp đẽ và cả những lúc khó khăn.
-                Em là ngôi sao sáng nhất trong vũ trụ của anh. Anh yêu em nhiều lắm!
-              </p>
-            </motion.div>
-          )}
-
-          {sections[activeSection] === 'gift' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="bg-pink-800 bg-opacity-70 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg text-center"
-            >
-              <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Món Quà Đặc Biệt</h2>
-              <p className="text-sm md:text-base text-pink-100 mb-4">Nhấn vào nút bên dưới để mở món quà của em</p>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="bg-pink-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-base"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowGift(true)
-                }}
-              >
-                Mở Quà
-              </motion.button>
-            </motion.div>
-          )}
-        </motion.div>
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showGift && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={(e) => {
-              e.stopPropagation()
-              setShowGift(false)
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="bg-pink-100 p-4 md:p-6 rounded-lg shadow-xl max-w-xs md:max-w-md text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl md:text-2xl font-bold text-pink-800 mb-3 md:mb-4">Món Quà Của Em</h3>
-              <p className="text-sm md:text-base text-pink-900 mb-3 md:mb-4">
-                Đây là [Mô tả món quà]. Anh hy vọng em sẽ thích nó!
-              </p>
-              <div className="relative w-full aspect-square mb-3 md:mb-4">
-                <Image
-                  src="/anh1.jpeg"
-                  alt="Món quà"
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-lg shadow-md"
-                />
-              </div>
-              <button
-                className="bg-pink-500 text-white px-4 py-2 rounded-full text-sm md:text-base"
-                onClick={(e) => {
-                  e.stopPropagation()
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+              onClick={(e) => {
+                e.stopPropagation()
+                if (isGiftOpened) {
                   setShowGift(false)
-                }}
+                  setIsGiftOpened(false)
+                }
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                transition={{ type: "spring", damping: 15 }}
+                className="bg-pink-100 p-4 md:p-6 rounded-lg shadow-xl max-w-xs md:max-w-md text-center relative overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
               >
-                Đóng
-              </button>
+                <AnimatePresence mode="wait">
+                  {!isGiftOpened ? (
+                    <motion.div
+                      key="gift-box"
+                      className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
+                      onClick={() => setIsGiftOpened(true)}
+                      variants={giftVariants}
+                      initial="closed"
+                      animate="opening"
+                      exit="opened"
+                    >
+                      <motion.div
+                        className="w-40 h-40 bg-pink-500 rounded-lg relative"
+                        animate={{ rotate: [0, -5, 5, -5, 5, 0] }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                      >
+                        <motion.div
+                          className="absolute inset-x-0 top-0 h-1/2 bg-pink-600 rounded-t-lg"
+                          initial={{ scaleY: 1, originY: "bottom" }}
+                          animate={{ scaleY: 0 }}
+                          transition={{ duration: 0.3, delay: 0.7 }}
+                        />
+                        <motion.div
+                          className="absolute inset-0 flex items-center justify-center"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 1 }}
+                        >
+                          <Gift size={64} className="text-white" />
+                        </motion.div>
+                      </motion.div>
+                      <motion.p
+                        className="mt-4 text-pink-800 font-semibold"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.2 }}
+                      >
+                        Nhấn để mở quà!
+                      </motion.p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="gift-content"
+                      variants={contentVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                    >
+                      <h3 className="text-xl md:text-2xl font-bold text-pink-800 mb-3 md:mb-4">Món Quà Của Em</h3>
+                      <p className="text-sm md:text-base text-pink-900 mb-3 md:mb-4">
+                        Đây là [Mô tả món quà]. Anh hy vọng em sẽ thích nó!
+                      </p>
+                      <motion.div
+                        className="relative w-full aspect-square mb-3 md:mb-4"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                      >
+                        <Image
+                          src="/anh1.jpeg"
+                          alt="Món quà"
+                          layout="fill"
+                          objectFit="cover"
+                          className="rounded-lg shadow-md"
+                        />
+                      </motion.div>
+                      <motion.button
+                        className="bg-pink-500 text-white px-4 py-2 rounded-full text-sm md:text-base"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setShowGift(false)
+                          setIsGiftOpened(false)
+                        }}
+                      >
+                        Đóng
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
 
-      <motion.button
-        className="fixed bottom-4 right-4 bg-pink-500 text-white p-2 md:p-3 rounded-full shadow-lg z-50"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={(e) => {
-          e.stopPropagation()
-          toggleMusic()
-        }}
-      >
-        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-      </motion.button>
-    </div>
+        <motion.button
+          className="fixed bottom-4 right-4 bg-pink-500 text-white p-2 md:p-3 rounded-full shadow-lg z-50"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleMusic()
+          }}
+        >
+          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+        </motion.button>
+      </div>
+    </>
   )
 }
