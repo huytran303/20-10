@@ -115,18 +115,25 @@ export function Page() {
   }, [isAudioLoaded])
 
   // Tự động phát nhạc khi người dùng tương tác
+  // Tự động phát nhạc khi người dùng tương tác
   useEffect(() => {
     const handleUserInteraction = () => {
       if (!isPlaying && isAudioLoaded) {
         playAudio()
       }
+      // Xóa bỏ sự kiện sau khi người dùng tương tác
       document.removeEventListener('click', handleUserInteraction)
+      document.removeEventListener('touchstart', handleUserInteraction) // Thêm sự kiện cho di động
     }
 
+    // Thêm sự kiện lắng nghe click và touchstart
     document.addEventListener('click', handleUserInteraction)
+    document.addEventListener('touchstart', handleUserInteraction) // Thêm sự kiện cho di động
 
     return () => {
+      // Xóa sự kiện khi unmount
       document.removeEventListener('click', handleUserInteraction)
+      document.removeEventListener('touchstart', handleUserInteraction) // Xóa bỏ sự kiện trên di động
     }
   }, [isPlaying, isAudioLoaded, playAudio])
 
