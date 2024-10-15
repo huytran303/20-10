@@ -6,17 +6,21 @@ import { Heart, Pause, Play, Gift } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import Head from 'next/head'
+
+// Mảng chứa các kỷ niệm (hình ảnh) sẽ hiển thị
 const memories = [
   { id: 1, src: "/anh1.jpeg", alt: "Kỷ niệm 1" },
   { id: 2, src: "/anh2.jpg", alt: "Kỷ niệm 2" },
-  { id: 3, src: "/anh3.png", alt: "Kỷ niệm 3" },
+  { id: 3, src: "/anh3.jpg", alt: "Kỷ niệm 3" },
   { id: 4, src: "/anh4.jpg", alt: "Kỷ niệm 4" },
   { id: 5, src: "/anh5.png", alt: "Kỷ niệm 5" },
   { id: 6, src: "/anh6.png", alt: "Kỷ niệm 6" },
 ]
 
+// Mảng chứa các section khác nhau của trang web
 const sections = ['home', 'memories', 'message', 'gift']
 
+// Component nền sao lấp lánh
 const StarryBackground = memo(() => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none">
     {[...Array(100)].map((_, i) => (
@@ -45,6 +49,7 @@ const StarryBackground = memo(() => (
 
 StarryBackground.displayName = 'StarryBackground'
 
+// Component hiển thị hình ảnh kỷ niệm
 const MemoryImage = memo(({ src, alt }: { src: string; alt: string }) => {
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -71,14 +76,16 @@ const MemoryImage = memo(({ src, alt }: { src: string; alt: string }) => {
 
 MemoryImage.displayName = 'MemoryImage'
 
+// Component chính của trang
 export function Page() {
-  const [activeSection, setActiveSection] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [showGift, setShowGift] = useState(false)
-  const [isGiftOpened, setIsGiftOpened] = useState(false)
-  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [activeSection, setActiveSection] = useState(0) // Quản lý section hiện tại
+  const [isPlaying, setIsPlaying] = useState(false) // Trạng thái âm nhạc
+  const [showGift, setShowGift] = useState(false) // Trạng thái hiển thị quà
+  const [isGiftOpened, setIsGiftOpened] = useState(false) // Trạng thái quà đã mở
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false) // Trạng thái âm thanh đã tải
+  const audioRef = useRef<HTMLAudioElement | null>(null) // Tham chiếu đến phần tử audio
 
+  // Tạo audio và quản lý sự kiện tải âm thanh
   useEffect(() => {
     audioRef.current = new Audio('/nhac.mp3')
     audioRef.current.loop = true
@@ -95,6 +102,7 @@ export function Page() {
     }
   }, [])
 
+  // Hàm phát nhạc
   const playAudio = useCallback(() => {
     if (audioRef.current && isAudioLoaded) {
       audioRef.current.play()
@@ -106,6 +114,7 @@ export function Page() {
     }
   }, [isAudioLoaded])
 
+  // Tự động phát nhạc khi người dùng tương tác
   useEffect(() => {
     const handleUserInteraction = () => {
       if (!isPlaying && isAudioLoaded) {
@@ -121,6 +130,7 @@ export function Page() {
     }
   }, [isPlaying, isAudioLoaded, playAudio])
 
+  // Chuyển đổi trạng thái âm nhạc (phát/tạm dừng)
   const toggleMusic = useCallback(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -132,6 +142,7 @@ export function Page() {
     }
   }, [isPlaying])
 
+  // Chuyển đổi giữa các section
   const handleNavigation = useCallback((direction: 'next' | 'prev') => {
     setActiveSection(prevSection => {
       if (direction === 'next') {
@@ -142,6 +153,7 @@ export function Page() {
     })
   }, [])
 
+  // Xử lý phím mũi tên để chuyển section
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowRight') {
@@ -158,17 +170,19 @@ export function Page() {
     }
   }, [handleNavigation])
 
+  // Xử lý nhấp chuột trái và phải để chuyển section
   const handleClick = useCallback((e: React.MouseEvent) => {
-    if (e.button === 0) { // Left click
+    if (e.button === 0) { // Nhấp chuột trái
       handleNavigation('next')
     }
   }, [handleNavigation])
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
-    handleNavigation('prev')
+    handleNavigation('prev') // Nhấp chuột phải
   }, [handleNavigation])
 
+  // Các hiệu ứng của món quà
   const giftVariants = {
     closed: {
       scale: 1,
@@ -189,6 +203,7 @@ export function Page() {
     },
   }
 
+  // Hiệu ứng hiển thị nội dung quà
   const contentVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: {
@@ -229,6 +244,7 @@ export function Page() {
             transition={{ duration: 0.5 }}
             className="w-full max-w-4xl mt-16 md:mt-20"
           >
+            {/* Section hiển thị lời chúc */}
             {sections[activeSection] === 'home' && (
               <div className="text-center">
                 <motion.div
@@ -246,7 +262,7 @@ export function Page() {
                   transition={{ delay: 0.5, duration: 0.5 }}
                   className="text-lg md:text-2xl text-center text-pink-200 mb-4 md:mb-8"
                 >
-                  Gửi đến người con gái tuyệt vời nhất của anh
+                  Gửi em Bống iu dấu cụa anh!
                 </motion.div>
 
                 <motion.div
@@ -266,6 +282,7 @@ export function Page() {
               </div>
             )}
 
+            {/* Section hiển thị hình ảnh kỷ niệm */}
             {sections[activeSection] === 'memories' && (
               <div className="text-center">
                 <h2 className="text-2xl md:text-4xl font-bold text-pink-300 mb-6 md:mb-8">Ảnh của em nèe :3</h2>
@@ -277,6 +294,7 @@ export function Page() {
               </div>
             )}
 
+            {/* Section hiển thị thông điệp yêu thương */}
             {sections[activeSection] === 'message' && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -284,15 +302,16 @@ export function Page() {
                 transition={{ duration: 1 }}
                 className="bg-pink-800 bg-opacity-70 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg"
               >
-                <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Thông Điệp Yêu Thương</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Đôi lời iu thương</h2>
                 <p className="text-sm md:text-base text-pink-100">
-                  Em yêu, mỗi ngày bên em là một hành trình tuyệt vời trong dải ngân hà tình yêu của chúng ta.
-                  Cảm ơn em đã luôn ở bên anh, chia sẻ những khoảnh khắc đẹp đẽ và cả những lúc khó khăn.
-                  Em là ngôi sao sáng nhất trong vũ trụ của anh. Anh yêu em nhiều lắm!
+                  Anh chúc em Bống iu dấu của anh ngày càng xinh đẹp, luôn luôn bên cạnh anh để anh có thể yêu thương và che chở cho em nhìu hơn nữaa!
+                  Chúc cho người con gái anh iu có một ngày lễ hạnh phúc và có thật nhìu niềm vui🥰🥰🥰
+                  Và đặc biệt, anh chúc mừng em vì 20/10 này đã có được anh🤭🤭🤭
                 </p>
               </motion.div>
             )}
 
+            {/* Section hiển thị món quà đặc biệt */}
             {sections[activeSection] === 'gift' && (
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
@@ -301,7 +320,7 @@ export function Page() {
                 className="bg-pink-800 bg-opacity-70 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg text-center"
               >
                 <h2 className="text-xl md:text-2xl font-bold text-pink-300 mb-3 md:mb-4">Món Quà Đặc Biệt</h2>
-                <p className="text-sm md:text-base text-pink-100 mb-4">Nhấn vào nút bên dưới để mở món quà của em</p>
+                <p className="text-sm md:text-base text-pink-100 mb-4">Nhấn vào nút bên dưới để mở(lưu ý: quà này là phiên bản giới hạn, cần phải sử dụng cẩn thận!!!)</p>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -318,6 +337,7 @@ export function Page() {
           </motion.div>
         </AnimatePresence>
 
+        {/* Hiệu ứng hiển thị món quà khi nhấn vào */}
         <AnimatePresence>
           {showGift && (
             <motion.div
@@ -391,7 +411,7 @@ export function Page() {
                     >
                       <h3 className="text-xl md:text-2xl font-bold text-pink-800 mb-3 md:mb-4">Món Quà Của Em</h3>
                       <p className="text-sm md:text-base text-pink-900 mb-3 md:mb-4">
-                        Đây là [Mô tả món quà]. Anh hy vọng em sẽ thích nó!
+                        tadaaaa, đây là món quà dành cho em Bống iu dấu của anh🥰🥰🥰. Hi vọng là em sẽ thích nó :)))
                       </p>
                       <motion.div
                         className="relative w-full aspect-square mb-3 md:mb-4"
@@ -400,7 +420,7 @@ export function Page() {
                         transition={{ delay: 0.2, duration: 0.5 }}
                       >
                         <Image
-                          src="/anh1.jpeg"
+                          src="/qua.jpg"
                           alt="Món quà"
                           layout="fill"
                           objectFit="cover"
@@ -426,6 +446,7 @@ export function Page() {
           )}
         </AnimatePresence>
 
+        {/* Nút điều khiển phát/tạm dừng âm nhạc */}
         <motion.button
           className="fixed bottom-4 right-4 bg-pink-500 text-white p-2 md:p-3 rounded-full shadow-lg z-50"
           whileHover={{ scale: 1.1 }}
